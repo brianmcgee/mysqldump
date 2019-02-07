@@ -1,3 +1,5 @@
+import {FakerAlgorithm} from './Faker';
+
 export interface ConnectionOptions {
     /**
      * The database host to connect to.
@@ -156,6 +158,15 @@ export interface TriggerDumpOptions {
     definer ?: boolean
 }
 
+export interface FakerColumnOptions {
+    algorithm: string
+    args: any[];
+}
+
+export interface FakerTableOptions {
+    [k: string]: FakerAlgorithm | FakerColumnOptions
+}
+
 export interface DataDumpOptions {
     /**
      * True to run a sql formatter over the output, false otherwise.
@@ -190,6 +201,10 @@ export interface DataDumpOptions {
      */
     where ?: {
         [k : string] : string
+    }
+
+    faker ?: {
+        [k: string] : FakerTableOptions
     }
 }
 

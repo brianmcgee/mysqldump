@@ -1,0 +1,39 @@
+version: '3.6'
+
+services:
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    command: mysqld --sql_mode=""
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqldump
+      MYSQL_DATABASE: mysqldump
+      MYSQL_USER: mysqldump
+      MYSQL_PASSWORD: mysqldump
+
+
+  adminer:
+    image: adminer:4.7
+    depends_on:
+      - mysql
+      - traefik
+    restart: on-failure
+    labels:
+      - "traefik.enable=true"
+      - "traefik.default.protocol=http"
+      - "traefik.backend=adminer"
+      - "traefik.frontend.rule=Host:adminer.mysqldump.docker"
+      - "traefik.port=8080"
+
+  traefik:
+    image: traefik:1.7.3-alpine
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker/traefik/traefik.toml:/etc/traefik/traefik.toml
+    restart: on-failure

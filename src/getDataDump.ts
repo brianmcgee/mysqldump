@@ -3,9 +3,11 @@ import * as mysql from 'mysql2'
 import * as sqlformatter from 'sql-formatter'
 import { all as merge } from 'deepmerge'
 
-import { ConnectionOptions, DataDumpOptions } from './interfaces/Options'
+import {ConnectionOptions, DataDumpOptions, FakerColumnOptions, FakerTableOptions} from './interfaces/Options'
 import Table from './interfaces/Table'
 import typeCast from './typeCast'
+
+import * as faker from 'faker';
 
 
 interface QueryRes {
@@ -22,8 +24,29 @@ function buildInsert(table : Table, values : string[], format : (s : string) => 
     // this undoes the wrapping we did to get around the formatting
     return sql.replace(/NOFORMAT_WRAP\("##(.+?)##"\)/g, '$1')
 }
-function buildInsertValue(row : QueryRes, table : Table) {
-    return `(${table.columnsOrdered.map(c => row[c]).join(',')})`
+function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerTableOptions) {
+
+    return `(${table.columnsOrdered.map(c => {
+        
+        let value = row[c]
+        
+        if(fakerOptions && fakerOptions[c]) {
+            
+            const columnOptions = fakerOptions[c]
+            
+            let algorithm: string
+            
+            if(typeof columnOptions === 'string') {
+                algorithm = columnOptions as string
+            } else {
+                const opts = columnOptions as FakerColumnOptions
+                algorithm = opts.algorithm
+            }
+            value = faker.fake(`{{${algorithm}}}`)
+        }
+        
+        return value;
+    }).join(',')})`
 }
 
 export default async function getDataDump(
@@ -115,8 +138,11 @@ export default async function getDataDump(
 
             // stream the data to the file
             query.on('result', (row : QueryRes) => {
+
+                const fakerOptions = options.faker ? options.faker[table.name] : undefined;
+
                 // build the values list
-                rowQueue.push(buildInsertValue(row, table))
+                rowQueue.push(buildInsertValue(row, table, fakerOptions))
 
                 // if we've got a full queue
                 if (rowQueue.length === options.maxRowsPerInsertStatement) {

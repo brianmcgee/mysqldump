@@ -8,7 +8,8 @@ import testConfig from '../testConfig'
             connection: testConfig,
             dump: {
                 data: {
-                    returnFromFunction: true,
+                    maxRowsPerInsertStatement: 100,
+                    returnFromFunction: true
                 },
             },
             dumpToFile: `${__dirname}/../launch_dump.sql`,

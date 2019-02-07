@@ -1,0 +1,40 @@
+################################################################
+# Global configuration
+################################################################
+
+debug = false
+logLevel = "INFO"
+
+defaultEntryPoints = ["http"]
+
+[entryPoints]
+
+  [entryPoints.traefik]
+  address = ":8080"
+  compress = true
+
+  [entryPoints.http]
+  address = ":80"
+  compress = true
+
+[retry]
+
+################################################################
+# Docker configuration backend
+################################################################
+
+[docker]
+
+endpoint = "unix:///var/run/docker.sock"
+watch = true
+exposedByDefault = false
+swarmMode = false
+
+################################################################
+# Traefik dashboard
+################################################################
+
+[api]
+entryPoint = "traefik"
+dashboard = true
+debug = false
