@@ -9,3 +9,5 @@ build-decl/
 dist/**/*.js
 dist/**/*.js.map
 yarn-error.log
+
+*.idea
