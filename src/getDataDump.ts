@@ -7,8 +7,7 @@ import {
     ConnectionOptions,
     DataDumpOptions,
     FakerColumnOptions,
-    FakerOptions,
-    FakerTableOptions
+    FakerOptions
 } from './interfaces/Options'
 import Table from './interfaces/Table'
 import typeCast from './typeCast'

@@ -163,6 +163,12 @@ export interface FakerColumnOptions {
 export interface FakerTableOptions {
 	[k: string]: FakerAlgorithm | FakerColumnOptions;
 }
+export interface FakerOptions {
+	locale?: string;
+	replacements: {
+		[k: string]: FakerTableOptions;
+	};
+}
 export interface DataDumpOptions {
 	/**
 	 * True to run a sql formatter over the output, false otherwise.
@@ -198,9 +204,7 @@ export interface DataDumpOptions {
 	where?: {
 		[k: string]: string;
 	};
-	faker?: {
-		[k: string]: FakerTableOptions;
-	};
+	faker?: FakerOptions;
 }
 export interface DumpOptions {
 	/**

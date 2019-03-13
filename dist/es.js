@@ -3,7 +3,7 @@ import { all } from 'deepmerge';
 import { format } from 'sql-formatter';
 import { createConnection } from 'mysql2';
 import { escape } from 'sqlstring';
-import { fake } from 'faker';
+import { fake, setLocale } from 'faker';
 import { createConnection as createConnection$1 } from 'mysql2/promise';
 
 /*! *****************************************************************************
@@ -507,10 +507,11 @@ function buildInsert(table, values, format$$1) {
     return sql.replace(/NOFORMAT_WRAP\("##(.+?)##"\)/g, '$1');
 }
 function buildInsertValue(row, table, fakerOptions) {
+    const tableOptions = fakerOptions ? fakerOptions.replacements[table.name] : undefined;
     return `(${table.columnsOrdered.map(c => {
         let value = row[c];
-        if (fakerOptions && fakerOptions[c]) {
-            const columnOptions = fakerOptions[c];
+        if (tableOptions && tableOptions[c]) {
+            const columnOptions = tableOptions[c];
             let algorithm;
             if (typeof columnOptions === 'string') {
                 algorithm = columnOptions;
@@ -528,6 +529,10 @@ function buildInsertValue(row, table, fakerOptions) {
 }
 function getDataDump(connectionOptions, options, tables, dumpToFile) {
     return __awaiter(this, void 0, void 0, function* () {
+        // setup faker
+        if (options.faker && options.faker.locale) {
+            setLocale(options.faker.locale);
+        }
         // ensure we have a non-zero max row option
         options.maxRowsPerInsertStatement = Math.max(options.maxRowsPerInsertStatement, 0);
         // clone the array
@@ -594,9 +599,8 @@ function getDataDump(connectionOptions, options, tables, dumpToFile) {
                 let rowQueue = [];
                 // stream the data to the file
                 query.on('result', (row) => {
-                    const fakerOptions = options.faker ? options.faker[table.name] : undefined;
                     // build the values list
-                    rowQueue.push(buildInsertValue(row, table, fakerOptions));
+                    rowQueue.push(buildInsertValue(row, table, options.faker));
                     // if we've got a full queue
                     if (rowQueue.length === options.maxRowsPerInsertStatement) {
                         // create and write a fresh statement
