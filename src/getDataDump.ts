@@ -3,7 +3,13 @@ import * as mysql from 'mysql2'
 import * as sqlformatter from 'sql-formatter'
 import { all as merge } from 'deepmerge'
 
-import {ConnectionOptions, DataDumpOptions, FakerColumnOptions, FakerTableOptions} from './interfaces/Options'
+import {
+    ConnectionOptions,
+    DataDumpOptions,
+    FakerColumnOptions,
+    FakerOptions,
+    FakerTableOptions
+} from './interfaces/Options'
 import Table from './interfaces/Table'
 import typeCast from './typeCast'
 
@@ -24,15 +30,17 @@ function buildInsert(table : Table, values : string[], format : (s : string) => 
     // this undoes the wrapping we did to get around the formatting
     return sql.replace(/NOFORMAT_WRAP\("##(.+?)##"\)/g, '$1')
 }
-function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerTableOptions) {
+function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOptions) {
+
+    const tableOptions = fakerOptions ? fakerOptions.replacements[table.name] : undefined;
 
     return `(${table.columnsOrdered.map(c => {
         
         let value = row[c]
         
-        if(fakerOptions && fakerOptions[c]) {
+        if(tableOptions && tableOptions[c]) {
             
-            const columnOptions = fakerOptions[c]
+            const columnOptions = tableOptions[c]
             
             let algorithm: string
             
@@ -59,6 +67,12 @@ export default async function getDataDump(
     tables : Table[],
     dumpToFile : string | null,
 ) {
+
+    // setup faker
+    if(options.faker && options.faker.locale) {
+        faker.setLocale(options.faker.locale);
+    }
+
     // ensure we have a non-zero max row option
     options.maxRowsPerInsertStatement = Math.max(options.maxRowsPerInsertStatement, 0)
 
@@ -143,10 +157,8 @@ export default async function getDataDump(
             // stream the data to the file
             query.on('result', (row : QueryRes) => {
 
-                const fakerOptions = options.faker ? options.faker[table.name] : undefined;
-
                 // build the values list
-                rowQueue.push(buildInsertValue(row, table, fakerOptions))
+                rowQueue.push(buildInsertValue(row, table, options.faker))
 
                 // if we've got a full queue
                 if (rowQueue.length === options.maxRowsPerInsertStatement) {
