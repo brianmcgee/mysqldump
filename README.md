@@ -43,6 +43,9 @@ const result = await mysqldump({
 ## Options
 All the below options are documented in the [typescript declaration file](./dist/mysqldump.d.ts):
 ```TS
+/// <reference types="node" />
+
+export declare type FakerAlgorithm = "address.zipCode" | "address.city" | "address.cityPrefix" | "address.citySuffix" | "address.streetName" | "address.streetAddress" | "address.streetSuffix" | "address.streetPrefix" | "address.secondaryAddress" | "address.county" | "address.country" | "address.countryCode" | "address.state" | "address.stateAbbr" | "address.latitude" | "address.longitude" | "commerce.color" | "commerce.department" | "commerce.productName" | "commerce.price" | "commerce.productAdjective" | "commerce.productMaterial" | "commerce.product" | "company.suffixes" | "company.companyName" | "company.companySuffix" | "company.catchPhrase" | "company.bs" | "company.catchPhraseAdjective" | "company.catchPhraseDescriptor" | "company.catchPhraseNoun" | "company.bsAdjective" | "company.bsBuzz" | "company.bsNoun" | "database.column" | "database.type" | "database.collation" | "database.engine" | "date.past" | "date.future" | "date.between" | "date.recent" | "date.soon" | "date.month" | "date.weekday" | "finance.account" | "finance.accountName" | "finance.mask" | "finance.amount" | "finance.transactionType" | "finance.currencyCode" | "finance.currencyName" | "finance.currencySymbol" | "finance.bitcoinAddress" | "finance.ethereumAddress" | "finance.iban" | "finance.bic" | "hacker.abbreviation" | "hacker.adjective" | "hacker.noun" | "hacker.verb" | "hacker.ingverb" | "hacker.phrase" | "image.image" | "image.avatar" | "image.imageUrl" | "image.abstract" | "image.animals" | "image.business" | "image.cats" | "image.city" | "image.food" | "image.nightlife" | "image.fashion" | "image.people" | "image.nature" | "image.sports" | "image.technics" | "image.transport" | "image.dataUri" | "internet.avatar" | "internet.email" | "internet.exampleEmail" | "internet.userName" | "internet.protocol" | "internet.url" | "internet.domainName" | "internet.domainSuffix" | "internet.domainWord" | "internet.ip" | "internet.ipv6" | "internet.userAgent" | "internet.color" | "internet.mac" | "internet.password" | "lorem.word" | "lorem.words" | "lorem.sentence" | "lorem.slug" | "lorem.sentences" | "lorem.paragraph" | "lorem.paragraphs" | "lorem.text" | "lorem.lines" | "name.firstName" | "name.lastName" | "name.findName" | "name.jobTitle" | "name.prefix" | "name.suffix" | "name.title" | "name.jobDescriptor" | "name.jobArea" | "name.jobType" | "phone.phoneNumber" | "phone.phoneNumberFormat" | "phone.phoneFormats" | "random.number" | "random.float" | "random.arrayElement" | "random.objectElement" | "random.uuid" | "random.boolean" | "random.word" | "random.words" | "random.image" | "random.locale" | "random.alphaNumeric" | "random.hexaDecimal" | "system.fileName" | "system.commonFileName" | "system.mimeType" | "system.commonFileType" | "system.commonFileExt" | "system.fileType" | "system.fileExt" | "system.directoryPath" | "system.filePath" | "system.semver";
 export interface ConnectionOptions {
 	/**
 	 * The database host to connect to.
@@ -71,6 +74,52 @@ export interface ConnectionOptions {
 	 * Defaults to 'UTF8_GENERAL_CI'.
 	 */
 	charset?: string;
+	/**
+	 * SSL configuration options.
+	 * Passing 'Amazon RDS' will use Amazon's RDS CA certificate.
+	 *
+	 * Otherwise you can pass the options which get passed to tls.createSecureContext.
+	 * See: https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options
+	 */
+	ssl?: 'Amazon RDS' | null | {
+		/**
+		 * Optionally override the trusted CA certificates. Default is to trust the well-known CAs curated by Mozilla.
+		 */
+		ca?: string | Buffer;
+		/**
+		 * Optional cert chains in PEM format.
+		 */
+		cert?: string | Buffer;
+		/**
+		 * Optional cipher suite specification, replacing the default.
+		 */
+		ciphers?: string;
+		/**
+		 * Optional PEM formatted CRLs (Certificate Revocation Lists).
+		 */
+		crl?: string | string[];
+		/**
+		 * Attempt to use the server's cipher suite preferences instead of the client's.
+		 */
+		honorCipherOrder?: boolean;
+		/**
+		 * Optional private keys in PEM format.
+		 */
+		key?: string | Buffer;
+		/**
+		 * Optional shared passphrase used for a single private key and/or a PFX.
+		 */
+		passphrase?: string;
+		/**
+		 * Optional PFX or PKCS12 encoded private key and certificate chain.
+		 */
+		pfx?: string | Buffer;
+		/**
+		 * DO NOT USE THIS OPTION UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!
+		 * Set to false to allow connection to a MySQL server without properly providing the appropraite CA to trust.
+		 */
+		rejectUnauthorized?: boolean;
+	};
 }
 export interface SchemaDumpOptions {
 	/**
@@ -152,6 +201,13 @@ export interface TriggerDumpOptions {
 	 */
 	definer?: boolean;
 }
+export interface FakerColumnOptions {
+	algorithm: string;
+	args: any[];
+}
+export interface FakerTableOptions {
+	[k: string]: FakerAlgorithm | FakerColumnOptions;
+}
 export interface DataDumpOptions {
 	/**
 	 * True to run a sql formatter over the output, false otherwise.
@@ -186,6 +242,9 @@ export interface DataDumpOptions {
 	 */
 	where?: {
 		[k: string]: string;
+	};
+	faker?: {
+		[k: string]: FakerTableOptions;
 	};
 }
 export interface DumpOptions {
@@ -228,7 +287,7 @@ export interface Options {
 	 * Set to a path to dump to a file.
 	 * Exclude to just return the string.
 	 */
-	dumpToFile?: string;
+	dumpToFile?: string | null;
 }
 export interface ColumnList {
 	/**
@@ -303,6 +362,7 @@ export interface DumpReturn {
 export default function main(inputOptions: Options): Promise<DumpReturn>;
 
 export as namespace mysqldump;
+
 ```
 
 ---------------------------------
