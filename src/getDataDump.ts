@@ -42,7 +42,11 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerTab
                 const opts = columnOptions as FakerColumnOptions
                 algorithm = opts.algorithm
             }
-            value = faker.fake(`{{${algorithm}}}`)
+            value = faker
+                .fake(`{{${algorithm}}}`)
+                .replace(/'/g, "\\'")
+            
+            value = `'${value}'`
         }
         
         return value;
