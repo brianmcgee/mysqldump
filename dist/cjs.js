@@ -533,7 +533,8 @@ function getDataDump(connectionOptions, options, tables, dumpToFile) {
     return __awaiter(this, void 0, void 0, function* () {
         // setup faker
         if (options.faker && options.faker.locale) {
-            faker.setLocale(options.faker.locale);
+            const f = faker;
+            f['locale'] = options.faker.locale;
         }
         // ensure we have a non-zero max row option
         options.maxRowsPerInsertStatement = Math.max(options.maxRowsPerInsertStatement, 0);

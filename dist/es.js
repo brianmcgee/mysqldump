@@ -3,7 +3,8 @@ import { all } from 'deepmerge';
 import { format } from 'sql-formatter';
 import { createConnection } from 'mysql2';
 import { escape } from 'sqlstring';
-import { fake, setLocale } from 'faker';
+import { fake } from 'faker';
+import * as faker from 'faker';
 import { createConnection as createConnection$1 } from 'mysql2/promise';
 
 /*! *****************************************************************************
@@ -531,7 +532,8 @@ function getDataDump(connectionOptions, options, tables, dumpToFile) {
     return __awaiter(this, void 0, void 0, function* () {
         // setup faker
         if (options.faker && options.faker.locale) {
-            setLocale(options.faker.locale);
+            const f = faker;
+            f['locale'] = options.faker.locale;
         }
         // ensure we have a non-zero max row option
         options.maxRowsPerInsertStatement = Math.max(options.maxRowsPerInsertStatement, 0);

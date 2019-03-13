@@ -69,7 +69,8 @@ export default async function getDataDump(
 
     // setup faker
     if(options.faker && options.faker.locale) {
-        faker.setLocale(options.faker.locale);
+        const f = faker as any;
+        f['locale'] = options.faker.locale;
     }
 
     // ensure we have a non-zero max row option
