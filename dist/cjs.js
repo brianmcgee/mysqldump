@@ -521,7 +521,9 @@ function buildInsertValue(row, table, fakerOptions) {
                 const opts = columnOptions;
                 algorithm = opts.algorithm;
             }
-            value = faker.fake(`{{${algorithm}}}`);
+            value = faker.fake(`{{${algorithm}}}`)
+                .replace(/'/g, "\\'");
+            value = `'${value}'`;
         }
         return value;
     }).join(',')})`;
