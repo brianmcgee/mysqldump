@@ -63,8 +63,12 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
 				let exclusions = exclude.split(",");
 				if (exclusions.indexOf(value) >= 0)
 					return value;
+				value =
+					faker.name.lastName() +
+					"." +
+					faker.random.number(9999) + "." +
+					faker.internet.email();
 
-				value = faker.name.lastName() + "." + faker.internet.email();
 			} else if (algorithm.startsWith('username')) {
 				// added more random email generator
 
