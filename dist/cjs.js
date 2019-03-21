@@ -523,12 +523,30 @@ function buildInsertValue(row, table, fakerOptions) {
                 algorithm = opts.algorithm;
             }
             if (algorithm.startsWith('replace:')) {
-                // allowing a hardcoded value
+                // allowing a hardcoded value				
                 value = algorithm.split(':')[1];
             }
             else if (algorithm.startsWith('email')) {
-                // added more random email generator
+                // added more random username generator
+                //We add the option to avoid certain values
+                let exclude = algorithm.split(":")[1];
+                exclude = exclude.replace("exclude[", "");
+                exclude = exclude.replace("]", "");
+                let exclusions = exclude.split(",");
+                if (exclusions.indexOf(value) >= 0)
+                    return value;
                 value = faker.name.lastName() + "." + faker.internet.email();
+            }
+            else if (algorithm.startsWith('username')) {
+                // added more random email generator
+                //We add the option to avoid certain values
+                let exclude = algorithm.split(":")[1];
+                exclude = exclude.replace("exclude[", "");
+                exclude = exclude.replace("]", "");
+                let exclusions = exclude.split(",");
+                if (exclusions.indexOf(value) >= 0)
+                    return value;
+                value = faker.internet.userName() + "_" + faker.random.number(9999);
             }
             else {
                 value = faker.fake(`{{${algorithm}}}`)
