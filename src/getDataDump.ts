@@ -50,9 +50,19 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
                 algorithm = opts.algorithm
             }
             
-            if(algorithm.startsWith('replace:')) {
-                // allowing a hardcoded value
-                value = algorithm.split(':')[1]
+			if (algorithm.startsWith('replace:')) {
+				// allowing a hardcoded value
+				value = algorithm.split(':')[1]
+			} else if (algorithm.startsWith('email')) {
+					// allowing a hardcoded value
+				value = algorithm.split(':')[1]
+				value =
+                    faker
+                        .fake(`name.lastname`)
+                        .replace(/'/g, "\\'") + "." +
+                    faker
+                        .fake(`internet.email`)
+                        .replace(/'/g, "\\'");
             } else {
                 value = faker
                     .fake(`{{${algorithm}}}`)
