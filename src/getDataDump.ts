@@ -58,10 +58,10 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
 				value = algorithm.split(':')[1]
 				value =
                     faker
-                        .fake(`name.lastname`)
+                        .fake(`{{name.lastname}}`)
                         .replace(/'/g, "\\'") + "." +
                     faker
-                        .fake(`internet.email`)
+                        .fake(`{{internet.email}}`)
                         .replace(/'/g, "\\'");
             } else {
                 value = faker

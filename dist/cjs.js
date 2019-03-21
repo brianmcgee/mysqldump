@@ -530,9 +530,9 @@ function buildInsertValue(row, table, fakerOptions) {
                 // allowing a hardcoded value
                 value = algorithm.split(':')[1];
                 value =
-                    faker.fake(`name.lastname`)
+                    faker.fake(`{{name.lastname}}`)
                         .replace(/'/g, "\\'") + "." +
-                        faker.fake(`internet.email`)
+                        faker.fake(`{{internet.email}}`)
                             .replace(/'/g, "\\'");
             }
             else {
