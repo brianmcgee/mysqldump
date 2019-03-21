@@ -3,7 +3,7 @@ import { all } from 'deepmerge';
 import { format } from 'sql-formatter';
 import { createConnection } from 'mysql2';
 import { escape } from 'sqlstring';
-import { fake } from 'faker';
+import { fake, internet, name } from 'faker';
 import * as faker from 'faker';
 import { createConnection as createConnection$1 } from 'mysql2/promise';
 
@@ -526,13 +526,8 @@ function buildInsertValue(row, table, fakerOptions) {
                 value = algorithm.split(':')[1];
             }
             else if (algorithm.startsWith('email')) {
-                // allowing a hardcoded value
-                value = algorithm.split(':')[1];
-                value =
-                    fake(`{{name.lastname}}`)
-                        .replace(/'/g, "\\'") + "." +
-                        fake(`{{internet.email}}`)
-                            .replace(/'/g, "\\'");
+                // added more random email generator
+                value = name.lastName() + "." + internet.email();
             }
             else {
                 value = fake(`{{${algorithm}}}`)

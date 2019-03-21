@@ -54,15 +54,8 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
 				// allowing a hardcoded value
 				value = algorithm.split(':')[1]
 			} else if (algorithm.startsWith('email')) {
-					// allowing a hardcoded value
-				value = algorithm.split(':')[1]
-				value =
-                    faker
-                        .fake(`{{name.lastname}}`)
-                        .replace(/'/g, "\\'") + "." +
-                    faker
-                        .fake(`{{internet.email}}`)
-                        .replace(/'/g, "\\'");
+					// added more random email generator
+				value = faker.name.lastName() + "." + faker.internet.email();
             } else {
                 value = faker
                     .fake(`{{${algorithm}}}`)
