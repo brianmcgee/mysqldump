@@ -77,7 +77,7 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
 				if (exclusions.indexOf(value) >= 0)
 					return value;
 
-				value = faker.internet.userName().toLocaleLowerCase + "_" + faker.random.number(9999)
+				value = faker.internet.userName().toLowerCase() + "_" + faker.random.number(9999)
             } else {
                 value = faker
                     .fake(`{{${algorithm}}}`)

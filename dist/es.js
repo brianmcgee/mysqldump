@@ -546,7 +546,7 @@ function buildInsertValue(row, table, fakerOptions) {
                 let exclusions = exclude.split(",");
                 if (exclusions.indexOf(value) >= 0)
                     return value;
-                value = internet.userName().toLocaleLowerCase + "_" + random.number(9999);
+                value = internet.userName().toLowerCase() + "_" + random.number(9999);
             }
             else {
                 value = fake(`{{${algorithm}}}`)
