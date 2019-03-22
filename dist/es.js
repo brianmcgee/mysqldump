@@ -535,10 +535,7 @@ function buildInsertValue(row, table, fakerOptions) {
                 if (exclusions.indexOf(value) >= 0)
                     return value;
                 value =
-                    name.lastName() +
-                        "." +
-                        random.number(9999) + "." +
-                        internet.email();
+                    internet.email(name.firstName() + random.number(9999), name.lastName()).toLowerCase();
             }
             else if (algorithm.startsWith('username')) {
                 // added more random email generator
@@ -549,7 +546,7 @@ function buildInsertValue(row, table, fakerOptions) {
                 let exclusions = exclude.split(",");
                 if (exclusions.indexOf(value) >= 0)
                     return value;
-                value = internet.userName() + "_" + random.number(9999);
+                value = internet.userName().toLocaleLowerCase + "_" + random.number(9999);
             }
             else {
                 value = fake(`{{${algorithm}}}`)

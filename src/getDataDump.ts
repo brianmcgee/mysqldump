@@ -64,10 +64,7 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
 				if (exclusions.indexOf(value) >= 0)
 					return value;
 				value =
-					faker.name.lastName() +
-					"." +
-					faker.random.number(9999) + "." +
-					faker.internet.email();
+					faker.internet.email(faker.name.firstName() + faker.random.number(9999), faker.name.lastName()).toLowerCase();
 
 			} else if (algorithm.startsWith('username')) {
 				// added more random email generator
@@ -80,7 +77,7 @@ function buildInsertValue(row : QueryRes, table : Table, fakerOptions?: FakerOpt
 				if (exclusions.indexOf(value) >= 0)
 					return value;
 
-				value = faker.internet.userName() + "_" + faker.random.number(9999)
+				value = faker.internet.userName().toLocaleLowerCase + "_" + faker.random.number(9999)
             } else {
                 value = faker
                     .fake(`{{${algorithm}}}`)
